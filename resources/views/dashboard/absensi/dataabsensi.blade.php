@@ -48,7 +48,6 @@
                             <th>Checkin</th>
                             <th>Latest</th>
                             <th>Checkout</th>
-                            <th>aksi</th>
 
 
                             <th></th>
@@ -101,7 +100,7 @@
                                 </td>
 
 
-                                <td class="actions-cell">
+                                {{-- <td class="actions-cell">
                                     <div class="buttons center nowrap">
                                         <a href="detail-jabatan/{{ $userId }}" class="button small green">
                                             <span class="icon"><i class="mdi mdi-eye"></i></span>
@@ -117,7 +116,7 @@
                                         </button>
 
                                     </div>
-                                </td>
+                                </td> --}}
                             </tr>
                         @endforeach
 

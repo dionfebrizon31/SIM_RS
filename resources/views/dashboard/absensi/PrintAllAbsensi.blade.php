@@ -69,123 +69,81 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+
+        .bg-success {
+            background-color: #28a745 !important;
+        }
+
+        .bg-warning {
+            background-color: #ffc107 !important;
+        }
+
+        .bg-danger {
+            background-color: #dc3545 !important;
+        }
+
+        .text-white {
+            color: white !important;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        @php
 
-            $processedDates = [];
-        @endphp
         <div class="card-content">
             <table>
                 <thead>
                     <tr>
-                        <th>divisi</th>
-                        @foreach ($absensi as $item)
-                            @php
-                                // Ambil hanya bagian tanggal (Y-m-d) dari absensi_at
-                                $tanggalOnly = \Carbon\Carbon::parse($item->absensi_at)->format('Y-m-d');
-
-                                // Jika tanggal sudah ada dalam processedDates, skip
-                                if (in_array($tanggalOnly, $processedDates)) {
-                                    continue;
-                                }
-
-                                // Tampilkan kolom untuk tanggal yang belum diproses
-                                echo '<th>' . $tanggalOnly . '</th>';
-
-                                // Tandai tanggal sebagai sudah diproses
-                                $processedDates[] = $tanggalOnly;
-                            @endphp
+                        <th>User ID</th> <!-- Kolom untuk User ID -->
+                        @foreach ($datesRange as $tanggal)
+                            <th colspan="2" style="text-align: center">{{ $tanggal }}</th>
                         @endforeach
-                        <th></th>
+                    </tr>
+                    <tr>
+                        <th>NamaKaryawan</th> <!-- Kolom untuk Divisi -->
+                        @foreach ($datesRange as $tanggal)
+                            <th>checkin</th>
+                            <th>checkout</th>
+                            <!-- Menampilkan Tanggal -->
+                        @endforeach
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-                        $checkinCount = 0; // Penghitung untuk check-in
-                        $LatestCount = 0; // Penghitung untuk check-in
-                        $checkoutCount = 0; // Penghitung untuk check-out
-                        $lastUserId = null; // Variabel untuk menyimpan user_id terakhir
-                    @endphp
-                    @foreach ($absensi as $item)
-                        <br>
-                        @if ($lastUserId != $item->user_id && $lastUserId == null)
-                            {{-- 1 --}}
-                            @php
-                                $lastUserId = $item->user_id;
-                                if ($item->status == 'checkin') {
-                                    $checkinCount++; // Menambah penghitung check-in
-                                } elseif ($item->status == 'checkout') {
-                                    $checkoutCount++; // Menambah penghitung check-out
-                                } elseif ($item->status == 'latest') {
-                                    $LatestCount++; // Menambah penghitung latest
-                                }
-                            @endphp
-                            <tr>
-                                <td data-label="Nama" class="border-r border-gray-400 px-4 py-2">
-                                    {{ $item->user->name }}
-                                    {{ $item->id }}</td>
-                                <td data-label="Status" class="border-r border-gray-400 px-4 py-2">{{ $item->status }}
-                                    {{ $item->id }}</td>
+                    @foreach ($Users as $userId => $userData)
+                        <tr>
+                            <td>{{ $userData['nama'] }}</td> <!-- Menampilkan Nama User -->
+                            @foreach ($datesRange as $tanggal)
+                                <!-- Loop untuk setiap tanggal -->
                                 @php
-                                    continue;
+                                    // Ambil data absensi untuk user dan tanggal tertentu
+                                    $status = $userData['absensi'][$tanggal] ?? [
+                                        'checkin' => 'Alfa',
+                                        'checkout' => 'Alfa',
+                                    ];
                                 @endphp
-                            @elseif ($lastUserId == $item->user_id)
-                                {{-- 234 --}}
-                                @php
-                                    $lastUserId = $item->user_id;
-                                    if ($item->status == 'checkin') {
-                                        $checkinCount++; // Menambah penghitung check-in
-                                    } elseif ($item->status == 'checkout') {
-                                        $checkoutCount++; // Menambah penghitung check-out
-                                    } elseif ($item->status == 'latest') {
-                                        $LatestCount++; // Menambah penghitung latest
-                                    }
-                                @endphp
-                                <td data-label="Status" class="border-r border-gray-400 px-4 py-2">{{ $item->status }}
-                                    {{ $item->id }}</td>
-                                @php
-                                    continue;
-
-                                @endphp
-                            @else
-                                {{-- 5 6 --}}
-                            <tr>
-                                @php
-                                    $lastUserId = $item->user_id;
-                                    if ($item->status == 'checkin') {
-                                        $checkinCount++; // Menambah penghitung check-in
-                                    } elseif ($item->status == 'checkout') {
-                                        $checkoutCount++; // Menambah penghitung check-out
-                                    } elseif ($item->status == 'latest') {
-                                        $LatestCount++; // Menambah penghitung latest
-                                    }
-                                @endphp
-                                <td data-label="Nama" class="border-r border-gray-400 px-4 py-2">
-                                    {{ $item->user->name }}
-                                    {{ $item->id }}</td>
-                                <td data-label="Status" class="border-r border-gray-400 px-4 py-2">
-                                    {{ $item->status }}
-                                    {{ $item->id }}</td>
-                                @php
-                                    continue;
-
-                                @endphp
-
-                            </tr>
-                        @endif
-                        <td data-label="Checkin" class="border-r border-gray-400 px-4 py-2">
-                            {{ $checkinCount }}</td>
-                        <td data-label="Latest" class="border-r border-gray-400 px-4 py-2">{{ $LatestCount }}</td>
-                        <td data-label="Checkout" class="border-r border-gray-400 px-4 py-2">{{ $checkoutCount }}
-                        </td>
-
+                                <!-- Menampilkan Checkin -->
+                                <td
+                                    class="
+                                    @if ($status['checkin'] == 'Alfa' && $status['latest'] != 'Alfa') text-white bg-warning
+                                    @elseif ($status['latest'] == 'Alfa' && $status['checkin'] != 'Alfa')
+                                         text-white bg-success 
+                                    @else
+                                         text-white bg-danger @endif
+                                ">
+                                    @if ($status['checkin'] == 'Alfa')
+                                        {{ $status['latest'] }}
+                                    @elseif ($status['latest'] == 'Alfa')
+                                        {{ $status['checkin'] }}
+                                    @else
+                                        Alfa
+                                    @endif
+                                </td>
+                                <!-- Menampilkan Checkout -->
+                                <td>{{ $status['checkout'] ?? 'Alfa' }}</td>
+                            @endforeach
                         </tr>
                     @endforeach
-
                 </tbody>
             </table>
 
